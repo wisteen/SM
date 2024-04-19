@@ -1,0 +1,31 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Questions</title>
+</head>
+<body>
+    <h1>Quiz Questions</h1>
+    <ul>
+        {% for question in questions %}
+        
+        <li>
+            <strong>Question {{ question.question_number  }}:</strong> {{ question.question_text | safe }} <br>
+            <input type="radio" name="option{{ question.id }}" value="A">A: {{ question.optionA }} <br>
+            <input type="radio" name="option{{ question.id }}" value="B">B: {{ question.optionB }} <br>
+            <input type="radio" name="option{{ question.id }}" value="C">C: {{ question.optionC }} <br>
+            <input type="radio" name="option{{ question.id }}" value="D">D: {{ question.optionD }} <br>
+            <input type="radio" name="option{{ question.id }}" value="E">E: {{ question.optionE }} <br>
+            <p><b>Correct Answer: </b>{{ question.option_answer | safe}} </p>
+            <a href="{% url 'quiz:edit_question' question.id %}"><button>Edit Question {{ question.question_number  }}</button></a>
+        </li>
+        <br>
+        <br>
+
+        {% endfor %}
+    </ul>
+</body>
+</html>

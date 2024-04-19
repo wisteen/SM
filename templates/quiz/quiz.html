@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Template</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <style>
+    
+    /* Styles for the quiz */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .quiz-container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .question {
+      margin-bottom: 20px;
+    }
+    .options li {
+      margin-bottom: 10px;
+    }
+    .nav-buttons {
+    text-align: center; /* Center-align buttons */
+    margin-top: 20px;
+    
+  }
+
+  .nav-buttons button {
+    padding: 10px 20px;
+    border: 1px solid #007bff; /* Border color */
+    border-radius: 5px;
+    background-color: #007bff; /* Background color */
+    color: #fff; /* Text color */
+    cursor: pointer;
+    margin-right: 10px; /* Add margin between buttons */
+    width:150px;
+  }
+
+  /* Style for the active state of navigation buttons */
+  .nav-buttons button.active {
+    background-color: #0056b3; /* Darker background color */
+    border-color: #0056b3; /* Darker border color */
+  }
+    .tab-buttons {
+    display: flex; /* Arrange buttons horizontally */
+    justify-content: center; /* Center-align buttons */
+    flex-wrap: wrap; /* Allow buttons to wrap to the next line if necessary */
+    margin-top: 20px;
+  }
+
+  .tablink {
+    margin: 5px; /* Add margin between buttons */
+    padding: 10px 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+  }
+
+  .tablink.active {
+    background-color: #007bff;
+    color: #fff;
+  }
+    #submitBtn {
+      background-color: #007bff;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+     /* Modal styles */
+     .modal {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+      z-index: 9999;
+      text-align: center;
+    }
+    .modal-content {
+      display: inline-block;
+      margin-top: 20%;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+    .hide {
+      display: none;
+    }
+
+  </style>
+</head>
+<body>
+ 
+
+  <div class="container-fluid">
+    <div class="row bg-light shadow alert alert-success">
+      <div class="col-sm-6 alert alert-info">
+        <h4 class="">{{quiz_data.title}}</h4>
+        <p class="">Subject: <b>{{quiz_data.subject}}</b></p>
+        <p class="">Assessment: <b>{{quiz_data.assessment}}</b></p>
+        <div class="">Timer: <b><span id="timer"> 00:00</span></b></div>
+      </div>
+      
+      <div class="col-sm alert alert-success">
+        
+        <div class="row">
+          <h2>Personal Details</h2>
+
+          <div class="col-6 col-sm-12">
+            <img src="{{student.profile_picture.url}}" width="200" height="250" alt="user">
+          </div>
+
+          <div class="col-6 col-sm-12">
+            <p>Name: <b> {{ student.user.first_name }} {{ student.user.last_name }}</b></p>
+            <p>Class: <b>{{ student.student_class }}</b></p>
+            <p>CBT No.: <b>{{ student.cbt_code }}</b></p>
+            <p>DOB: <b>{{ student.date_of_birth }}</b></p>
+            
+          </div>
+        </div>
+        
+      </div>
+      <div class="col-sm alert alert-warning">
+        <h2>Tools</h2>
+        <p>Calculator</p>
+        <p>Instructions</p>
+      </div>
+    </div>
+  </div>
+  <!-- <div id="timer">00:00</div> -->
+  <input type="number" id="minutes" value="{{quiz_data.duration}}" placeholder="Enter minutes" hidden>
+
+
+  <div class="quiz-container">
+    {% for question in questions %}
+    <div class="question" id="question-{{ question.question_number  }}">
+      <h2>Question {{ question.question_number  }}</h2>
+      <p>{{ question.question_text | safe }}</p>
+      <ul class="options">
+        {% if question.optionA != "" and question.optionA is not None %}
+        <label for="q{{ question.question_number  }}a"><input type="radio" name="q{{ question.question_number  }}" value="A" id="q{{ question.question_number  }}a">A: {{ question.optionA }}</label>
+        {% endif %}
+        <br>
+        {% if question.optionB != "" and question.optionB is not None %}
+        <label for="q{{ question.question_number  }}b"><input type="radio" name="q{{ question.question_number  }}" value="B" id="q{{ question.question_number  }}b">B: {{ question.optionB }} </label>
+        {% endif %}
+        <br>
+
+        {% if question.optionC != "" and question.optionC is not None %}
+        <label for="q{{ question.question_number  }}c"><input type="radio" name="q{{ question.question_number  }}" value="C" id="q{{ question.question_number  }}c">C: {{ question.optionC }} </label>
+        {% endif %}
+        <br>
+
+
+        {% if question.optionD != "" and  question.optionD is not None %}
+        <label for="q{{ question.question_number  }}d"><input type="radio" name="q{{ question.question_number  }}" value="D" id="q{{ question.question_number  }}d">D: {{ question.optionD }} </label>
+          
+        {% endif %}
+        <br>
+
+        {% if question.optionE != "" and question.optionE is not None %}
+        <label for="q{{ question.question_number  }}e"><input type="radio" name="q{{ question.question_number  }}" value="E" id="q{{ question.question_number  }}e">E: {{ question.optionE }} </label>
+        {% endif %}
+      </ul>
+    </div>
+    {% endfor %}
+    
+    
+    <!-- Add more questions as needed -->
+
+    <div class="nav-buttons">
+      <button id="prevBtn" onclick="prevQuestion()">Previous</button>
+      <button id="nextBtn" onclick="nextQuestion()">Next</button>
+    </div>
+    <div class="tab-buttons">
+      <!--  -->
+      {% for question in questions %}
+      {% if question.question_number == "1" %}
+      <button class="tablink active" onclick="showQuestion(1)">1</button>
+      {% else %}
+      <button class="tablink" onclick="showQuestion(`{{ question.question_number }}`)">{{ question.question_number  }}</button>
+      {% endif %}
+      
+      {% endfor %}
+      
+      <!-- Add more buttons for additional questions -->
+    </div>
+    <form  method="post" id="quiz_form" action="{% url 'quiz:submit_quiz' %}">
+      {% csrf_token %}
+      <div id="submitBtn" onclick="submitAnswers()">Submit</div>
+      <!-- Add this inside your form -->
+      <input type="hidden" id="quiz_id" name="quiz_id" value="{{ quiz_data.id }}">
+      <input type="hidden" id="json_answers" name="json_answers">
+
+    </form>
+  </div>
+
+
+ <div id="fullscreenModal" class="modal">
+    <div class="modal-content">
+      <h2>Welcome to Fullscreen Mode</h2>
+      <p>Click the button below to enter fullscreen mode.</p>
+      <button id="fullscreenButton">Go Fullscreen</button>
+    </div>
+  </div>
+
+
+
+  <script>
+    
+    let currentQuestion = 1;
+    const answers = {};
+
+    function nextQuestion() {
+      showQuestion(currentQuestion + 1);
+    }
+
+    function prevQuestion() {
+      showQuestion(currentQuestion - 1);
+    }
+
+    function showQuestion(n) {
+      const questions = document.getElementsByClassName("question");
+      const tablinks = document.getElementsByClassName("tablink");
+
+      // Hide all questions
+      for (let i = 0; i < questions.length; i++) {
+        questions[i].style.display = "none";
+      }
+
+      // Remove active class from all tab buttons
+      for (let i = 0; i < tablinks.length; i++) {
+        tablinks[i].classList.remove("active");
+      }
+
+      // Show the specified question
+      if (n > questions.length) {
+        currentQuestion = 1;
+      } else if (n < 1) {
+        currentQuestion = questions.length;
+      } else {
+        currentQuestion = n;
+      }
+      questions[currentQuestion - 1].style.display = "block";
+
+      // Add active class to the corresponding tab button
+      tablinks[currentQuestion - 1].classList.add("active");
+    }
+
+    function submitAnswers() {
+      const radioButtons = document.querySelectorAll('input[type="radio"]:checked');
+      radioButtons.forEach(button => {
+        const questionNumber = button.getAttribute("name").slice(1);
+        const answer = button.value;
+        answers[questionNumber] = answer;
+      });
+      const jsonAnswers = JSON.stringify(answers);
+      console.log(jsonAnswers);
+      // Here you can do whatever you want with the JSON string, such as sending it to a server
+      // Set the value of the hidden input field
+      document.getElementById('json_answers').value = jsonAnswers;
+
+     // Submit the form
+      document.getElementById('quiz_form').submit();
+    }
+
+        let timerInterval;
+    const timerDisplay = document.getElementById('timer');
+
+    function startTimer() {
+      clearInterval(timerInterval); // Clear any existing timer
+
+      const minutesInput = document.getElementById('minutes').value;
+      const totalSeconds = minutesInput * 60;
+
+      let secondsLeft = totalSeconds;
+
+      function updateTimer() {
+        const minutes = Math.floor(secondsLeft / 60);
+        let seconds = secondsLeft % 60;
+
+        // Add leading zero to single digit seconds
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+
+        timerDisplay.textContent = minutes + ':' + seconds;
+
+        if (secondsLeft === 0) {
+          clearInterval(timerInterval);
+          alert('Time\'s up!');
+          submitAnswers()
+
+        } else {
+          secondsLeft--;
+        }
+      }
+
+      updateTimer(); // Call it immediately to avoid 1 second delay
+
+      timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    document.addEventListener('copy', function(e){
+      e.preventDefault();
+    })
+    document.addEventListener('contextmenu', function(e){
+      e.preventDefault();
+    })
+    
+    document.addEventListener("fullscreenchange", function () {
+    if (!document.fullscreenElement) {
+      submitAnswers();
+    }
+  });
+
+  document.addEventListener("webkitfullscreenchange", function () {
+    if (!document.webkitFullscreenElement) {
+      submitAnswers();
+    }
+  });
+
+  document.addEventListener("mozfullscreenchange", function () {
+    if (!document.mozFullScreen) {
+      submitAnswers();
+    }
+  });
+
+  document.addEventListener("msfullscreenchange", function () {
+    if (!document.msFullscreenElement) {
+      submitAnswers();
+    }
+  });
+    showQuestion(1)
+
+
+    function requestFullScreen(element) {
+      // Supports most browsers and their versions.
+      var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || element.msRequestFullScreen;
+
+      if (requestMethod) { // Native full screen.
+        requestMethod.call(element);
+      } else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
+        var wscript = new ActiveXObject("WScript.Shell");
+        if (wscript !== null) {
+          wscript.SendKeys("{F11}");
+        }
+      }
+    }
+
+    document.getElementById("fullscreenButton").addEventListener("click", function() {
+      var elem = document.documentElement; // Make the entire document go fullscreen.
+      requestFullScreen(elem);
+    });
+
+     // Function to hide the modal
+    function hideModal() {
+      const modal = document.getElementById("fullscreenModal");
+      modal.classList.add("hide");
+      startTimer()
+    }
+
+    // Add event listener to fullscreenButton
+    document.getElementById("fullscreenButton").addEventListener("click", function() {
+      hideModal();
+      requestFullScreen();
+      
+    });
+
+   
+  </script>
+</body>
+</html>
