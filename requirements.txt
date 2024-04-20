@@ -15,10 +15,10 @@ cryptography
 decorator
 Deprecated
 distro
-Django
+Django==5.0.3
 django-ckeditor-5
 django-classy-tags
-django-cms
+#django-cms
 django-formtools
 django-jazzmin
 django-sekizai
