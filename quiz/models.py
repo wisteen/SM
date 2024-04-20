@@ -72,7 +72,7 @@ class QuizAttempt(models.Model):
         return f'{self.student.user.username} - {self.quiz.title}'
 
 
-class QuizReport():
+class QuizReport(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     score = models.CharField(max_length=50, blank=True, null=True)
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
